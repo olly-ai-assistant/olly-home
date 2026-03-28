@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 Phase: 7 of 10 (LanceDB Restore and Capture Fix)
 Plan: — of — (not yet planned)
 Status: Ready to plan
-Last activity: 2026-03-25 - Completed quick task 50: LanceDB dist-only layout fix (dist/package.json + hardlinks + JS patches)
+Last activity: 2026-03-28 - Quick task 53 blocked: DAVE E2EE prevents voice_recv audio receive
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -137,5 +137,5 @@ None
 ## Session Continuity
 
 Last session: 2026-03-28T21:30:00Z
-Stopped at: Quick-53 blocked — DAVE E2EE library limitation prevents audio receive
+Stopped at: Quick-53 blocked — DAVE E2EE library limitation prevents audio receive. Ghost fix + graceful shutdown applied.
 Resume file: None
