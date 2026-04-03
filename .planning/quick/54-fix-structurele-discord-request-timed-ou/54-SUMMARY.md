@@ -1,22 +1,23 @@
-# Quick Task 54: Summary
+# Quick Task 54: Summary (Updated)
 
 ## Status: Done
 
 ## Probleem
-Discord #algemeen gaf herhaaldelijk "request timed out before a response was generated". Elke MiniMax API call faalde — cron jobs, Discord berichten, Telegram, alles.
+Discord #algemeen geeft herhaaldelijk "request timed out before a response was generated".
 
-## Root Cause
-`minimax-portal` provider in `openclaw.json` gebruikte `apiKey: "minimax-oauth"` — een OAuth authenticatie methode die verlopen/gebroken was. OpenClaw kon geen enkel LLM request voltooien.
+## Root Causes (meerdere lagen)
+1. **Dag 1**: `minimax-portal` provider gebruikte verlopen OAuth token (`minimax-oauth`) → gefixt met directe API key
+2. **Dag 2**: Config verdween na nightly update → hersteld uit backup
+3. **Dag 2**: MetaClaw proxy routeerde naar verkeerd MiniMax endpoint (`api.minimax.chat` ipv `api.minimax.io/anthropic`) → 401 → timeout
+4. **Dag 2**: MetaClaw kan alleen OpenAI-format (`/chat/completions`), maar de MiniMax API key werkt alleen op het Anthropic-format endpoint (`api.minimax.io/anthropic/v1/messages`)
 
-Daarnaast: MetaClaw proxy had dezelfde API key 4x gedupliceerd (paste error bij setup).
+## Definitieve Fix
+- MetaClaw proxy uitgeschakeld (incompatibel met Anthropic-only MiniMax key)
+- Agent model direct gerouteerd naar `minimax-portal/MiniMax-M2.7`
+- MetaClaw provider verwijderd uit openclaw.json
+- Update script verbeterd: config backup/restore bij missing config
 
-## Fixes
-1. **minimax-portal apiKey** gewijzigd van `minimax-oauth` naar directe API key uit `credentials/minimax-chat.json`
-2. **MetaClaw config** API key gecorrigeerd (was 4x gedupliceerd)
-3. **MetaClaw herstart** met correcte key
-4. **Gateway hot-reload** pikte de config change automatisch op
-
-## Verificatie
-- Discord #algemeen: bot reageert weer zonder timeout
-- Telegram: berichten worden verstuurd
-- Cron jobs: heartbeat zou nu weer moeten werken
+## MetaClaw Status
+MetaClaw kan pas weer gebruikt worden als:
+1. Een MiniMax OpenAI-format API key beschikbaar is (`api.minimax.chat`), OF
+2. MetaClaw support krijgt voor Anthropic-format endpoints
